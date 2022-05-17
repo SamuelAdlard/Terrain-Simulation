@@ -57,6 +57,12 @@ public class Generation : MonoBehaviour
 
     private void Update()
     {
+
+        if (Input.GetKeyDown("c"))
+        {
+            SimulateClouds();
+        }
+       
         
     }
 
@@ -66,6 +72,7 @@ public class Generation : MonoBehaviour
         {
             for (int y = 0; y < size; y++)
             {
+                print(x + "," + y);
                 if (Tiles[x, y].type == types.sea)
                 {
                     Clouds[x, y].water += Tiles[x, y].temperature * 0.1f;
@@ -80,38 +87,74 @@ public class Generation : MonoBehaviour
                         Clouds[x, y].cloud.SetActive(false);
                     }
 
-                    if (Clouds[x, y].isCloud == true)
-                    {
-                        Vector2[] neighbours = GetNeighbours(x, y);
-                        Vector2 bestPos = new Vector2(x,y);
-                        float lowestTemp = 100;
-                        foreach (Vector2 neighbour in neighbours)
-                        {
-                            if (Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].temperature >= lowestTemp)
-                            {
-                                bestPos = neighbour;
-                                lowestTemp = Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].temperature;
-                            }
-                        }
 
-                        Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].water += Clouds[x, y].water;
-                        Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].isCloud = true;
-                        Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].cloud.SetActive(false);
-                        Clouds[x, y].cloud.SetActive(false);
-                    }
+
                 }
+
+                if (Clouds[x, y].isCloud == true)
+                {
+                    Vector2[] neighbours = GetNeighbours(x, y);
+                    Vector2 bestPos = new Vector2(x, y);
+                    float lowestTemp = 100;
+                    foreach (Vector2 neighbour in neighbours)
+                    {
+                        if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].temperature >= lowestTemp)
+                        {
+                            print("Cloud");
+                            bestPos = neighbour;
+                            lowestTemp = Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].temperature;
+                        }
+                    }
+
+                    Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].water += Clouds[x, y].water;
+                    Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].isCloud = true;
+                    Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].cloud.SetActive(false);
+                    Clouds[x, y].cloud.SetActive(false);
+                }
+
             }
+
         }
     }
-    
     Vector2[] GetNeighbours(int x, int y)
     {
-        Vector2[] neighbours = new Vector2[3];
-        neighbours[0] = new Vector2(x + 1, y);
-        neighbours[1] = new Vector2(x - 1, y);
-        neighbours[2] = new Vector2(x, y + 1);
-        neighbours[3] = new Vector2(x, y - 1);
-        
+        Vector2[] neighbours = new Vector2[4];
+        if (x < size - 1)
+        {
+            neighbours[0] = new Vector2(x + 1, y);
+        }
+        else
+        {
+            neighbours[0] = new Vector2(size + 1, size);
+        }
+
+        if (x > 0)
+        {
+            neighbours[1] = new Vector2(x - 1, y);
+        }
+        else
+        {
+            neighbours[1] = new Vector2(size + 1, size);
+        }
+
+        if (y < size - 1)
+        {
+            neighbours[2] = new Vector2(x, y + 1);
+        }
+        else
+        {
+            neighbours[2] = new Vector2(size + 1, size);
+        }
+
+        if (y > 0)
+        {
+            neighbours[3] = new Vector2(x, y - 1);
+        }
+        else
+        {
+            neighbours[3] = new Vector2(size + 1, size);
+        }
+
         return neighbours;
     }
 }
