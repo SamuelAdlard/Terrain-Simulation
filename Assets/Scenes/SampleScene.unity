@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Tile: {fileID: 6035123776671198772, guid: 293e63ce735920844afb89a1c09df3bd, type: 3}
+  Cloud: {fileID: 3156412558017304938, guid: b2be83294fd8f4f4bb35c869a3261e57, type: 3}
   materials:
   - {fileID: 2100000, guid: 39ab40c4a10e3e043bb0575d61668f2f, type: 2}
   - {fileID: 2100000, guid: de7ccb488bf5cae4b8973908561a00f0, type: 2}
@@ -160,7 +161,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 546bef52c491eca43bd9dafe8d359fe8, type: 2}
   - {fileID: 2100000, guid: 3710bbf0f0c547c48a54f8f4960e98a1, type: 2}
   - {fileID: 2100000, guid: fa797ce9dc8acc141a2f2a375b6b78fe, type: 2}
-  seed: 42069
+  seed: 419770
 --- !u!4 &296890519
 Transform:
   m_ObjectHideFlags: 0
