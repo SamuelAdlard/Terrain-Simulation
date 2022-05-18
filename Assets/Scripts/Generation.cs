@@ -32,9 +32,9 @@ public class Generation : MonoBehaviour
                 Clouds[x, y].cloud.SetActive(false);
                 Tiles[x, y] = new Tile();
                 Tiles[x, y].tile = Instantiate(Tile, new Vector3(x, 0, y), Quaternion.identity);
-                Tiles[x, y].temperature = y * 0.4f + 10 + Random.Range(-5, 6);
+                Tiles[x, y].temperature = y * 0.4f + 10 + Random.Range(-10, 11);
                 Tiles[x, y].tile.name = x.ToString() + y.ToString() + " " + Mathf.PerlinNoise(x * 0.025f, y * 0.025f) + " " + Tiles[x, y].temperature;
-                Tiles[x, y].temperature = y * 0.5f + 5;
+               
                 if (Mathf.PerlinNoise((x + seed) * 0.05f, (y + seed) * 0.05f) <= 0.4f)
                 {
                     Tiles[x, y].type = types.sea;
@@ -72,25 +72,7 @@ public class Generation : MonoBehaviour
         {
             for (int y = 0; y < size; y++)
             {
-                print(x + "," + y);
-                if (Tiles[x, y].type == types.sea)
-                {
-                    Clouds[x, y].water += Tiles[x, y].temperature * 0.1f;
-                    if (Clouds[x, y].water > 2.5f)
-                    {
-                        Clouds[x, y].isCloud = true;
-                        Clouds[x, y].cloud.SetActive(true);
-                    }
-                    else
-                    {
-                        Clouds[x, y].isCloud = false;
-                        Clouds[x, y].cloud.SetActive(false);
-                    }
-
-
-
-                }
-
+                print(Clouds[x, y].isCloud + " " + x + " " + y);
                 if (Clouds[x, y].isCloud == true)
                 {
                     Vector2[] neighbours = GetNeighbours(x, y);
@@ -100,20 +82,35 @@ public class Generation : MonoBehaviour
                     {
                         if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].temperature >= lowestTemp)
                         {
-                            print("Cloud");
+                            
                             bestPos = neighbour;
                             lowestTemp = Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].temperature;
                         }
                     }
-
+                    print(bestPos + "(" + y + ", " + x + ")");
+                    Clouds[x, y].cloud.SetActive(false);
                     Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].water += Clouds[x, y].water;
                     Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].isCloud = true;
-                    Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].cloud.SetActive(false);
-                    Clouds[x, y].cloud.SetActive(false);
+                    Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].cloud.SetActive(true);
+                    
                 }
 
+                if (Tiles[x, y].type == types.sea)
+                {
+                    Clouds[x, y].water += Tiles[x, y].temperature * 0.05f;
+                    if (Clouds[x, y].water > 2.5f)
+                    {
+                        Clouds[x, y].isCloud = true;
+                        Clouds[x, y].cloud.SetActive(true);
+                        
+                    }
+                    else
+                    {
+                        Clouds[x, y].isCloud = false;
+                        Clouds[x, y].cloud.SetActive(false);
+                    }
+                }
             }
-
         }
     }
     Vector2[] GetNeighbours(int x, int y)
