@@ -4,22 +4,25 @@ using UnityEngine;
 
 public class MeshGen : MonoBehaviour
 {
-    public MeshFilter meshFiter;
-    Mesh mesh = new Mesh();
-    int[,] vertices = new int[33, 33];
+    public MeshFilter meshFilter;
+    public float seed = 0;
+    
+    int[,] vertices = new int[34, 34];
     Vector3[] newVertices = new Vector3[1089];
     public float scale = 0.5f;
-    void Start()
+    void Awake()
     {
+        Mesh mesh = new Mesh();
         int side = 0;
         int y = 0;
         int x = 0;
-        for (int i = 0; i < meshFiter.mesh.vertexCount; i++)
+        for (int i = 0; i < meshFilter.mesh.vertexCount; i++)
         {
+            print(x + "," + y);
             vertices[x, y] = i;
             x++;
             
-            if(i <= side + 33)
+            if(i >= side + 33)
             {
                 side += 33;
                 x = 0;
@@ -27,16 +30,19 @@ public class MeshGen : MonoBehaviour
             }
             
         }
+
         
-        for (int x1 = 0; x < 33; x1++)
+        
+        for (int i = 0; i < 1089; i++)
         {
-            for (int y1 = 0; y < 33; y1++)
-            {
-                newVertices[x1 + y1] = new Vector3(0, 0, 0);
-            }
+            newVertices[i] = new Vector3(meshFilter.mesh.vertices[i].x, Mathf.PerlinNoise((x * scale) + seed, (y * scale) + seed) * 1, meshFilter.mesh.vertices[i].x);
         }
 
-
+        mesh.vertices = newVertices;
+        mesh.uv = meshFilter.mesh.uv;
+        mesh.triangles = meshFilter.mesh.triangles;
+        mesh.normals = meshFilter.mesh.normals;
+        meshFilter.mesh = mesh;
     }
 
    

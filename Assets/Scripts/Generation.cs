@@ -140,6 +140,7 @@ public class Generation : MonoBehaviour
                 {
                     if (Tiles[x, y].type == types.forest)
                     {
+                        Tiles[x, y].water = 6;
                         Tiles[x, y].type = types.grass;
                     }
                 }
