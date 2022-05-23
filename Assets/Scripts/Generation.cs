@@ -98,7 +98,7 @@ public class Generation : MonoBehaviour
                     }
                 }
 
-                if (nearMountain && Random.Range(0,20) == 0 && Tiles[x, y].type != types.mountain )
+                if (nearMountain && Random.Range(0,10) == 0 && Tiles[x, y].type != types.mountain )
                 {
                     Tiles[x, y].water += 500;
                     Tiles[x, y].type = types.freshwater;
@@ -207,7 +207,7 @@ public class Generation : MonoBehaviour
 
                         if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].type != types.mountain && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].type != types.sea && Tiles[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].water < 5)
                         {
-                            Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].water += 0.5f;
+                            Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].water += 1;
                         }
 
                         
