@@ -8,7 +8,7 @@ public class MeshGen : MonoBehaviour
     public float seed = 0;
     Vertex[,] vertices = new Vertex[100, 100];
     Vector3[] newVertices = new Vector3[10000];
-    int[][] triangles = new int[3][];
+    int[] triangles = new int[58806];
     public float scale = 0.5f;
     void Start()
     {
@@ -23,15 +23,36 @@ public class MeshGen : MonoBehaviour
                 vertices[x, y].index = i;
                 vertices[x, y].position = position;
                 newVertices[i] = position;
-                print(i);
+                
+                i++;
+            }
+        }
+
+        i = 0;
+        int j = 0;
+        for (int x = 0; x < 100; x++)
+        {
+            for (int y = 0; y < 100; y++)
+            {
+                if (x < 99 && y > 99)
+                {
+                    triangles[j] = vertices[x, y].index;
+                    triangles[j + 1] = vertices[x, y + 1].index;
+                    triangles[j + 2] = vertices[x + 1, y].index;
+                    triangles[j] = vertices[x + 1, y].index;
+                    triangles[j + 1] = vertices[x + 1, y + 1].index;
+                    triangles[j + 2] = vertices[x, y + 1].index;
+                }
+                
+
+                j += 3;
                 i++;
             }
         }
 
         mesh.vertices = newVertices;
-        //mesh.triangles = ;
-        mesh.triangles = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        print(newVertices[0]);
+        
+        
 
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
