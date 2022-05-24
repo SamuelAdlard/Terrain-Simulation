@@ -6,44 +6,43 @@ public class MeshGen : MonoBehaviour
 {
     public MeshFilter meshFilter;
     public float seed = 0;
-    
-    int[,] vertices = new int[34, 34];
-    Vector3[] newVertices = new Vector3[1089];
+    Vertex[,] vertices = new Vertex[100, 100];
+    Vector3[] newVertices = new Vector3[10000];
+    int[][] triangles = new int[3][];
     public float scale = 0.5f;
-    void Awake()
+    void Start()
     {
         Mesh mesh = new Mesh();
-        int side = 0;
-        int y = 0;
-        int x = 0;
-        for (int i = 0; i < meshFilter.mesh.vertexCount; i++)
+        int i = 0;
+        for (int x = 0; x < 100; x++)
         {
-            print(x + "," + y);
-            vertices[x, y] = i;
-            x++;
-            
-            if(i >= side + 33)
+            for (int y = 0; y < 100; y++)
             {
-                side += 33;
-                x = 0;
-                y++;
+                vertices[x, y] = new Vertex();
+                Vector3 position = new Vector3(x, 0, y);
+                vertices[x, y].index = i;
+                vertices[x, y].position = position;
+                newVertices[i] = position;
+                print(i);
+                i++;
             }
-            
-        }
-
-        
-        
-        for (int i = 0; i < 1089; i++)
-        {
-            newVertices[i] = new Vector3(meshFilter.mesh.vertices[i].x, Mathf.PerlinNoise((x * scale) + seed, (y * scale) + seed) * 1, meshFilter.mesh.vertices[i].x);
         }
 
         mesh.vertices = newVertices;
-        mesh.uv = meshFilter.mesh.uv;
-        mesh.triangles = meshFilter.mesh.triangles;
-        mesh.normals = meshFilter.mesh.normals;
+        //mesh.triangles = ;
+        mesh.triangles = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        print(newVertices[0]);
+
+        mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
     }
 
-   
+    
 }
+
+public class Vertex
+{
+    public int index;
+    public Vector3 position;
+}
+
