@@ -8,11 +8,20 @@ public class MeshGen : MonoBehaviour
     public float seed = 0;
     Vertex[,] vertices = new Vertex[100, 100];
     Vector3[] newVertices = new Vector3[10000];
+    Vector2[] newUV = new Vector2[10000];
     int[] triangles = new int[58806];
     public float scale = 0.5f;
     void Start()
     {
         Mesh mesh = new Mesh();
+        
+
+        for (int f = 0; f < newUV.Length; f++)
+        {
+            newUV[f] = new Vector2(0,0);
+        }
+        
+        
         int i = 0;
         for (int x = 0; x < 100; x++)
         {
@@ -40,22 +49,33 @@ public class MeshGen : MonoBehaviour
                     triangles[j + 1] = vertices[x, y + 1].index;
                     triangles[j + 2] = vertices[x + 1, y].index;
                     triangles[j] = vertices[x + 1, y].index;
-                    triangles[j + 1] = vertices[x + 1, y + 1].index;
-                    triangles[j + 2] = vertices[x, y + 1].index;
+                    triangles[j + 1] = vertices[x, y + 1].index;
+                    triangles[j + 2] = vertices[x + 1, y + 1].index;
                 }
                 
 
-                j += 3;
+                j += 6;
                 i++;
             }
         }
 
+        mesh.Clear();
         mesh.vertices = newVertices;
-        
+
+        mesh.triangles = triangles;
+        mesh.uv = newUV;
+        mesh.name = "Land";
+        mesh.RecalculateNormals();
+        meshFilter.mesh.Clear();
+        meshFilter.mesh = mesh;
+
+        foreach (int item in meshFilter.mesh.triangles)
+        {
+            print(item);
+        }
+
         
 
-        mesh.RecalculateNormals();
-        meshFilter.mesh = mesh;
     }
 
     
