@@ -10,44 +10,66 @@ public class MeshGen : MonoBehaviour
     Vector3[] newVertices = new Vector3[10000];
     Vector2[] newUV = new Vector2[10000];
     Vector3[] newNormals = new Vector3[10000];
+    Color[] colours = new Color[10000];
     int[] triangles = new int[58806];
+    public Color[] Colours;
+    public Vector2[] colourXY;
     public float mountainHeight = 0.6f;
-    public float seaLevel = 0.3f;
     public float scale = 0.5f;
     public float waterMeshHeight = 0;
-    void Start()
+    public bool vertexColour = false;
+    public Generation terrain;
+    public Material vertexColourMat;
+    public void MakeMesh()
     {
         Mesh mesh = new Mesh();
         
 
         for (int f = 0; f < newUV.Length; f++)
         {
-            newUV[f] = new Vector2(0,0);
+            
             newNormals[f] = new Vector3(0,1,0);
         }
-        
+
+        if (vertexColour)
+        {
+            gameObject.GetComponent<MeshRenderer>().material = vertexColourMat;
+        }
         
         int i = 0;
         for (int x = 0; x < 100; x++)
         {
             for (int y = 0; y < 100; y++)
             {
-                float noise = Mathf.PerlinNoise((x + seed) * scale, (y + seed) * scale);
-
+                //float noise = Mathf.PerlinNoise((x + seed) * scale, (y + seed) * scale);
+                float noise = terrain.Tiles[x, y].height; 
+                
+                float seaLevel = terrain.waterLevel;
                 float tileHeight = noise;
                 Vector3 position;
                 vertices[x, y] = new Vertex();
                 if (tileHeight <= seaLevel)
                 {
+                    
                     position = new Vector3(x, waterMeshHeight, y);
                 }
                 else if(tileHeight >= mountainHeight)
                 {
-                    position = new Vector3(x, Mathf.Pow(tileHeight * 3, 3),y);
+                    
+                    position = new Vector3(x, Mathf.Pow(tileHeight * 2.75f, 3),y);
                 }
                 else
                 {
+                    
                     position = new Vector3(x, tileHeight * 10, y);
+                }
+                if (vertexColour == true)
+                {
+                    colours[i] = Colours[(int)terrain.Tiles[x, y].type];
+                }
+                else
+                {
+                    newUV[i] = UV(colourXY[(int)terrain.Tiles[x, y].type].x, colourXY[(int)terrain.Tiles[x, y].type].y);
                 }
                 
                 vertices[x, y].index = i;
@@ -87,8 +109,13 @@ public class MeshGen : MonoBehaviour
         mesh.triangles = triangles;
         mesh.uv = newUV;
         mesh.name = "Land";
-        mesh.normals = newNormals;
+        if (vertexColour)
+        {
+            mesh.SetColors(colours);
+        }
         
+        
+        mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
         
 
@@ -98,7 +125,22 @@ public class MeshGen : MonoBehaviour
 
     }
 
-    
+    Vector2 UV(float Chunkx, float Chunky)
+    {
+        Chunkx = Mathf.RoundToInt(Chunkx);
+        Chunky = Mathf.RoundToInt(Chunky);
+        const float chunksize = 0.25f;
+        float UVstartx;
+        float UVstarty;
+        float UVendx;
+        float UVendy;
+        UVstartx = chunksize * Chunkx + 0.05f;
+        UVstarty = chunksize * Chunky + 0.05f;
+        UVendx = UVstartx + chunksize - 0.1f;
+        UVendy = UVstarty + chunksize - 0.1f;
+        return new Vector2((UVstartx + UVendx) / 2, (UVstarty + UVendy) / 2);        
+    }
+
 }
 
 public class Vertex

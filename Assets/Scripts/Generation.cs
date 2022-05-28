@@ -17,6 +17,9 @@ public class Generation : MonoBehaviour
     float nextTick = 0;
     public float delay = 2;
     public float waterLevel = 0.35f;
+    public int numberOfCycles;
+    public MeshGen meshGen;
+    int cycles = 0;
     public enum types
     {
         sea,
@@ -110,12 +113,18 @@ public class Generation : MonoBehaviour
 
     private void Update()
     {
-
-        if (nextTick < Time.time)
+        
+        if (nextTick < Time.time && cycles < numberOfCycles)
         {
             
             nextTick = Time.time + delay;
             Simulate();
+            cycles++;
+        }
+        print(cycles);
+        if (cycles == numberOfCycles - 1)
+        {
+            meshGen.MakeMesh();
         }
        
         
@@ -412,7 +421,7 @@ public class Tile
     public GameObject tile;
     public Generation.types type = 0;
 
-
+    
     public float height = 0;
     public float waterreductionRate = 1;
     public float water = 0f;
