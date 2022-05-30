@@ -161,14 +161,16 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 546bef52c491eca43bd9dafe8d359fe8, type: 2}
   - {fileID: 2100000, guid: 3710bbf0f0c547c48a54f8f4960e98a1, type: 2}
   - {fileID: 2100000, guid: fa797ce9dc8acc141a2f2a375b6b78fe, type: 2}
-  seed: 0
-  scale: 0.025
+  seed: 589
+  scale: 0.05
   mountainLevel: 0.7
   size: 100
   delay: 0.05
   waterLevel: 0.4
-  numberOfCycles: 1000
+  numberOfCycles: 250
   meshGen: {fileID: 1612798680}
+  continueGeneration: 1
+  showSim: 0
 --- !u!4 &296890519
 Transform:
   m_ObjectHideFlags: 0
@@ -179,6 +181,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -272,6 +275,7 @@ Transform:
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -355,6 +359,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -389,6 +394,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -458,7 +464,7 @@ MonoBehaviour:
   mountainHeight: 0.7
   scale: 0.025
   waterMeshHeight: 4
-  vertexColour: 0
+  vertexColour: 1
   terrain: {fileID: 296890518}
   vertexColourMat: {fileID: 2100000, guid: e4dda9df534bd4a4c9622ef02aa36b76, type: 2}
 --- !u!4 &1612798681
@@ -471,6 +477,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3

@@ -19,6 +19,8 @@ public class Generation : MonoBehaviour
     public float waterLevel = 0.35f;
     public int numberOfCycles;
     public MeshGen meshGen;
+    public bool continueGeneration = false;
+    public bool showSim = true;
     int cycles = 0;
     public enum types
     {
@@ -37,15 +39,22 @@ public class Generation : MonoBehaviour
             for (int y = 0; y < size; y++)
             {
                 Clouds[x, y] = new Cloud();
-                Clouds[x, y].cloud = Instantiate(Cloud, new Vector3(x, 2, y), Quaternion.identity);
-                Clouds[x, y].cloud.SetActive(false);
+                
+                
                 Tiles[x, y] = new Tile();
-                Tiles[x, y].tile = Instantiate(Tile, new Vector3(x, 0, y), Quaternion.identity);
+                
                 Tiles[x, y].temperature = y * 0.05f + 10 + Random.Range(-2, 3);
+                if (showSim)
+                {
+                    Clouds[x, y].cloud = Instantiate(Cloud, new Vector3(x, 2, y), Quaternion.identity);
+                    Clouds[x, y].cloud.SetActive(false);
+                    Tiles[x, y].tile = Instantiate(Tile, new Vector3(x, 0, y), Quaternion.identity);
+                }
                 float noise = Mathf.PerlinNoise((x + seed) * scale, (y + seed) * scale);
                 float noise1 = Mathf.PerlinNoise((x + seed / 2) * scale, (y + seed / 2) * scale);
                 float noise2 = Mathf.PerlinNoise((x + seed / 3) * scale, (y + seed / 3) * scale);
                 float tileHeight = (noise + noise1 + noise2) / 3;
+
                 Tiles[x, y].height = tileHeight;
                 if (Tiles[x, y].type == types.sea)
                 {
@@ -57,7 +66,11 @@ public class Generation : MonoBehaviour
                 if (tileHeight <= waterLevel)
                 {
                     Tiles[x, y].type = types.sea;
-                    Tiles[x, y].tile.transform.position = new Vector3(Tiles[x, y].tile.transform.position.x, -0.1f, Tiles[x, y].tile.transform.position.z);
+                    if (showSim)
+                    {
+                        Tiles[x, y].tile.transform.position = new Vector3(Tiles[x, y].tile.transform.position.x, -0.1f, Tiles[x, y].tile.transform.position.z);
+                    }
+                    
                 }
                 else if (tileHeight > waterLevel && tileHeight < mountainLevel)
                 {
@@ -66,11 +79,18 @@ public class Generation : MonoBehaviour
                 }
                 else
                 {
-                    Tiles[x, y].tile.transform.localScale = new Vector3(1, 2, 1);
+                    if (showSim)
+                    {
+                        Tiles[x, y].tile.transform.localScale = new Vector3(1, 2, 1);
+                    }
+                       
                     Tiles[x, y].type = types.mountain;
                 }
-                Tiles[x, y].tile.GetComponent<MeshRenderer>().material = materials[(int)Tiles[x, y].type];
-
+                
+                if (showSim)
+                {
+                    Tiles[x, y].tile.GetComponent<MeshRenderer>().material = materials[(int)Tiles[x, y].type];
+                }
                 
             }
         }
@@ -104,7 +124,7 @@ public class Generation : MonoBehaviour
                 if (nearMountain && Random.Range(0,10) == 0 && Tiles[x, y].type != types.mountain )
                 {
                     Tiles[x, y].water += 500;
-                    Tiles[x, y].type = types.freshwater;
+                    //Tiles[x, y].type = types.freshwater;
                 }
             }
         }
@@ -114,15 +134,19 @@ public class Generation : MonoBehaviour
     private void Update()
     {
         
-        if (nextTick < Time.time && cycles < numberOfCycles)
+        if (nextTick < Time.time && cycles < numberOfCycles || continueGeneration)
         {
-            
+           
             nextTick = Time.time + delay;
             Simulate();
             cycles++;
+            if (continueGeneration)
+            {
+                meshGen.Simulate();
+            }
         }
         print(cycles);
-        if (cycles == numberOfCycles - 1)
+        if (cycles == numberOfCycles - 1 || continueGeneration)
         {
             meshGen.MakeMesh();
         }
@@ -164,22 +188,36 @@ public class Generation : MonoBehaviour
                     Clouds[x, y].water += Tiles[x, y].temperature * 0.005f;
                 }
 
-                Clouds[x, y].cloud.name = Clouds[x, y].water.ToString();
+                if (showSim)
+                {
+                    Clouds[x, y].cloud.name = Clouds[x, y].water.ToString();
+                }
+               
                 if (Clouds[x, y].water > 5f)
                 {
                     Clouds[x, y].isCloud = true;
-                    Clouds[x, y].cloud.SetActive(true);
+
+                    if (showSim)
+                    {
+                        Clouds[x, y].cloud.SetActive(true);
+                    }
+                    
 
                 }
                 else
                 {
                     Clouds[x, y].isCloud = false;
-                    Clouds[x, y].cloud.SetActive(false);
+                    if (showSim)
+                    {
+                        Clouds[x, y].cloud.SetActive(false);
+                    }
+                    
                 }
 
                 bool nearSea = false;
                 bool nearMountain = false;
                 bool nearRiver = false;
+                bool nearDesert = false;
                 foreach (Vector2 neighbour in GetNeighbours(x, y))
                 {
                     if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].type == types.sea)
@@ -195,7 +233,11 @@ public class Generation : MonoBehaviour
                     if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].type == types.freshwater)
                     {
                         nearRiver = true;
-                        
+                    }
+
+                    if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].type == types.desert)
+                    {
+                        nearDesert = true;
                     }
                 }
 
@@ -242,7 +284,7 @@ public class Generation : MonoBehaviour
 
 
 
-                if (Clouds[x, y].cloud.activeSelf == true)
+                if (Clouds[x, y].isCloud == true)
                 {
                     if (Tiles[x, y].type != types.sea && Random.Range(0,2) == 1)
                     {
@@ -308,14 +350,30 @@ public class Generation : MonoBehaviour
                             }
                         }
                     }
+
+                    if (showSim)
+                    {
+                        Clouds[x, y].cloud.SetActive(false);
+                        Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].cloud.SetActive(true);
+                    }
                     
-                    
-                    Clouds[x, y].cloud.SetActive(false);
                     Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].water += Clouds[x, y].water;
                     Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].isCloud = true;
-                    Clouds[Mathf.RoundToInt(bestPos.x), Mathf.RoundToInt(bestPos.y)].cloud.SetActive(true);
+                    
                     
                 }
+
+                if (Tiles[x, y].type == types.forest && nearDesert)
+                {
+                    foreach (Vector2 neighbour in GetAllNeighbours(x, y))
+                    {
+                        if (neighbour.x < size + 1 && Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].type == types.desert)
+                        {
+                            Tiles[Mathf.RoundToInt(neighbour.x), Mathf.RoundToInt(neighbour.y)].water += 40;
+                        }
+                    }
+                }
+
 
 
                 if (Tiles[x ,y].type != types.sea)
@@ -324,7 +382,7 @@ public class Generation : MonoBehaviour
                     {
                         Tiles[x, y].type = types.grass;
                     }
-                    else if (Tiles[x, y].water >= 50 && Tiles[x, y].water < 100)
+                    else if (Tiles[x, y].water >= 50 && Tiles[x, y].water < 100 && !nearDesert)
                     {
                         Tiles[x, y].type = types.forest;
                     }
@@ -334,12 +392,16 @@ public class Generation : MonoBehaviour
                     }
                 }
 
+
                 
-                
-                    
-                
+
+
                 Tiles[x, y].temperature = y * 0.05f + 10 + Random.Range(-2, 3);
-                Tiles[x, y].tile.GetComponent<MeshRenderer>().material = materials[(int)Tiles[x, y].type];
+                if (showSim)
+                {
+                    Tiles[x, y].tile.GetComponent<MeshRenderer>().material = materials[(int)Tiles[x, y].type];
+                }
+                
                 if (Clouds[x, y].water < 0)
                 {
                     Clouds[x, y].water = 0;
@@ -350,7 +412,11 @@ public class Generation : MonoBehaviour
                     
                     Clouds[x, y].water = 0;
                     Clouds[x, y].isCloud = false;
-                    Clouds[x, y].cloud.SetActive(false);
+                    if (showSim)
+                    {
+                        Clouds[x, y].cloud.SetActive(false);
+                    }
+                    
 
                 }
 
@@ -362,6 +428,86 @@ public class Generation : MonoBehaviour
             }
         }
     }
+
+
+    Vector2[] GetAllNeighbours(int x, int y)
+    {
+        Vector2[] neighbours = new Vector2[8];
+        if (x < size - 1)
+        {
+            neighbours[0] = new Vector2(x + 1, y);
+        }
+        else
+        {
+            neighbours[0] = new Vector2(size + 1, size);
+        }
+
+        if (x > 0)
+        {
+            neighbours[1] = new Vector2(x - 1, y);
+        }
+        else
+        {
+            neighbours[1] = new Vector2(size + 1, size);
+        }
+
+        if (y < size - 1)
+        {
+            neighbours[2] = new Vector2(x, y + 1);
+        }
+        else
+        {
+            neighbours[2] = new Vector2(size + 1, size);
+        }
+
+        if (y > 0)
+        {
+            neighbours[3] = new Vector2(x, y - 1);
+        }
+        else
+        {
+            neighbours[3] = new Vector2(size + 1, size);
+        }
+
+        if (y > 0 && x > 0)
+        {
+            neighbours[4] = new Vector2(x - 1, y - 1);
+        }
+        else
+        {
+            neighbours[4] = new Vector2(size + 1, size);
+        }
+
+        if (y > 0 && x < size - 1)
+        {
+            neighbours[5] = new Vector2(x + 1 , y - 1);
+        }
+        else
+        {
+            neighbours[5] = new Vector2(size + 1, size);
+        }
+
+        if (y < size - 1 && x > 0)
+        {
+            neighbours[6] = new Vector2(x - 1, y + 1);
+        }
+        else
+        {
+            neighbours[6] = new Vector2(size + 1, size);
+        }
+
+        if (y < size - 1 && x < size - 1)
+        {
+            neighbours[7] = new Vector2(x + 1, y + 1);
+        }
+        else
+        {
+            neighbours[7] = new Vector2(size + 1, size);
+        }
+
+        return neighbours;
+    }
+
 
 
     Vector2[] GetNeighbours(int x, int y)

@@ -18,6 +18,7 @@ public class MeshGen : MonoBehaviour
     public float scale = 0.5f;
     public float waterMeshHeight = 0;
     public bool vertexColour = false;
+    
     public Generation terrain;
     public Material vertexColourMat;
     public void MakeMesh()
@@ -63,6 +64,7 @@ public class MeshGen : MonoBehaviour
                     
                     position = new Vector3(x, tileHeight * 10, y);
                 }
+                
                 if (vertexColour == true)
                 {
                     colours[i] = Colours[(int)terrain.Tiles[x, y].type];
@@ -125,6 +127,31 @@ public class MeshGen : MonoBehaviour
 
     }
 
+    public void Simulate()
+    {
+        if (terrain.continueGeneration)
+        {
+            int i = 0;
+            for (int x = 0; x < 100; x++)
+            {
+                for (int y = 0; y < 100; y++)
+                {
+                    if (vertexColour == true)
+                    {
+                        colours[i] = Colours[(int)terrain.Tiles[x, y].type];
+                    }
+                    else
+                    {
+                        newUV[i] = UV(colourXY[(int)terrain.Tiles[x, y].type].x, colourXY[(int)terrain.Tiles[x, y].type].y);
+                    }
+
+                    i++;
+                }
+            }
+        }
+    }
+
+
     Vector2 UV(float Chunkx, float Chunky)
     {
         Chunkx = Mathf.RoundToInt(Chunkx);
@@ -140,6 +167,8 @@ public class MeshGen : MonoBehaviour
         UVendy = UVstarty + chunksize - 0.1f;
         return new Vector2((UVstartx + UVendx) / 2, (UVstarty + UVendy) / 2);        
     }
+
+    
 
 }
 
