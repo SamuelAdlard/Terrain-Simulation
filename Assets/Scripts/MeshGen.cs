@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Data;
 
 public class MeshGen : MonoBehaviour
 {
@@ -18,14 +19,17 @@ public class MeshGen : MonoBehaviour
     public float scale = 0.5f;
     public float waterMeshHeight = 0;
     public bool vertexColour = false;
-    
+    public bool bitMapTexture = false;
+    public int width = 100, height = 100;
     public Generation terrain;
     public Material vertexColourMat;
+    public Texture2D texture;
     public void MakeMesh()
     {
+        texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
         Mesh mesh = new Mesh();
         
-
+        
         for (int f = 0; f < newUV.Length; f++)
         {
             
@@ -42,7 +46,7 @@ public class MeshGen : MonoBehaviour
         {
             for (int y = 0; y < 100; y++)
             {
-                //float noise = Mathf.PerlinNoise((x + seed) * scale, (y + seed) * scale);
+                
                 float noise = terrain.Tiles[x, y].height; 
                 
                 float seaLevel = terrain.waterLevel;
@@ -71,8 +75,12 @@ public class MeshGen : MonoBehaviour
                 }
                 else
                 {
-                    newUV[i] = UV(colourXY[(int)terrain.Tiles[x, y].type].x, colourXY[(int)terrain.Tiles[x, y].type].y);
+                    
+                    newUV[i] = UV(x, y);
                 }
+                
+                
+
                 
                 vertices[x, y].index = i;
                 vertices[x, y].position = position;
@@ -81,6 +89,8 @@ public class MeshGen : MonoBehaviour
                 i++;
             }
         }
+        
+        MakeTexture();
 
         i = 0;
         int j = 0;
@@ -111,14 +121,21 @@ public class MeshGen : MonoBehaviour
         mesh.triangles = triangles;
         mesh.uv = newUV;
         mesh.name = "Land";
+        texture.Apply();
         if (vertexColour)
         {
             mesh.SetColors(colours);
+        }
+
+        if (bitMapTexture)
+        {
+            gameObject.GetComponent<MeshRenderer>().material.mainTexture = texture;
         }
         
         
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
+        
         
 
         
@@ -126,6 +143,19 @@ public class MeshGen : MonoBehaviour
         
 
     }
+
+    void MakeTexture()
+    {
+        for (int x = 0; x < 1000; x++)
+        {
+            for (int y = 0; y < 1000; y++)
+            {
+                texture.SetPixel(x, y, Colours[(int)terrain.Tiles[x / 10, y / 10].type]);
+            }
+        }
+    }
+
+
 
     public void Simulate()
     {
@@ -156,15 +186,15 @@ public class MeshGen : MonoBehaviour
     {
         Chunkx = Mathf.RoundToInt(Chunkx);
         Chunky = Mathf.RoundToInt(Chunky);
-        const float chunksize = 0.25f;
+        const float chunksize = 0.01f;
         float UVstartx;
         float UVstarty;
         float UVendx;
         float UVendy;
-        UVstartx = chunksize * Chunkx + 0.05f;
-        UVstarty = chunksize * Chunky + 0.05f;
-        UVendx = UVstartx + chunksize - 0.1f;
-        UVendy = UVstarty + chunksize - 0.1f;
+        UVstartx = chunksize * Chunkx + 0.0001f;
+        UVstarty = chunksize * Chunky + 0.0001f;
+        UVendx = UVstartx + chunksize - 0.0001f;
+        UVendy = UVstarty + chunksize - 0.0001f;
         return new Vector2((UVstartx + UVendx) / 2, (UVstarty + UVendy) / 2);        
     }
 

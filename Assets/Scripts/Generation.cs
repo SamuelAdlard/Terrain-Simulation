@@ -133,7 +133,7 @@ public class Generation : MonoBehaviour
 
     private void Update()
     {
-        
+        bool simulated = false;
         if (nextTick < Time.time && cycles < numberOfCycles || continueGeneration)
         {
            
@@ -145,10 +145,11 @@ public class Generation : MonoBehaviour
                 meshGen.Simulate();
             }
         }
-        print(cycles);
-        if (cycles == numberOfCycles - 1 || continueGeneration)
+        
+        if (cycles == numberOfCycles - 1 && !continueGeneration && !simulated)
         {
             meshGen.MakeMesh();
+            simulated = true;
         }
        
         
