@@ -163,13 +163,13 @@ MonoBehaviour:
   - {fileID: 2100000, guid: fa797ce9dc8acc141a2f2a375b6b78fe, type: 2}
   seed: 589
   scale: 0.05
-  mountainLevel: 0.7
+  mountainLevel: 0.6
   size: 100
   delay: 0.05
   waterLevel: 0.4
-  numberOfCycles: 250
+  numberOfCycles: 1000
   meshGen: {fileID: 1612798680}
-  continueGeneration: 1
+  continueGeneration: 0
   showSim: 0
 --- !u!4 &296890519
 Transform:
@@ -461,13 +461,14 @@ MonoBehaviour:
   - {x: 2, y: 3}
   - {x: 2, y: 2}
   - {x: 1, y: 1}
-  mountainHeight: 0.7
+  mountainHeight: 0.6
   scale: 0.025
   waterMeshHeight: 4
   vertexColour: 0
   bitMapTexture: 1
   width: 1000
   height: 1000
+  mountainMeshHeight: 2.75
   terrain: {fileID: 296890518}
   vertexColourMat: {fileID: 2100000, guid: e4dda9df534bd4a4c9622ef02aa36b76, type: 2}
   texture: {fileID: 0}

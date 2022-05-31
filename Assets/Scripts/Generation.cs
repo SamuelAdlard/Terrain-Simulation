@@ -10,6 +10,7 @@ public class Generation : MonoBehaviour
     public int seed;
     public float scale = 0.05f;
     public float mountainLevel = 0.65f;
+    
     public int size = 50;
     public Tile[,] Tiles = new Tile[200,200];
     public Cloud[,] Clouds = new Cloud[200, 200];
@@ -34,6 +35,8 @@ public class Generation : MonoBehaviour
 
     void Start()
     {
+       
+        
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
@@ -128,7 +131,12 @@ public class Generation : MonoBehaviour
                 }
             }
         }
-       
+
+        if (continueGeneration)
+        {
+            meshGen.MakeMesh();
+        }
+
     }
 
     private void Update()
@@ -145,7 +153,7 @@ public class Generation : MonoBehaviour
                 meshGen.Simulate();
             }
         }
-        
+        print(cycles);
         if (cycles == numberOfCycles - 1 && !continueGeneration && !simulated)
         {
             meshGen.MakeMesh();

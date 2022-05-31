@@ -21,13 +21,15 @@ public class MeshGen : MonoBehaviour
     public bool vertexColour = false;
     public bool bitMapTexture = false;
     public int width = 100, height = 100;
+    public float mountainMeshHeight = 10f;
     public Generation terrain;
     public Material vertexColourMat;
     public Texture2D texture;
+    Mesh mesh;
     public void MakeMesh()
     {
         texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
-        Mesh mesh = new Mesh();
+        mesh = new Mesh();
         
         
         for (int f = 0; f < newUV.Length; f++)
@@ -61,7 +63,7 @@ public class MeshGen : MonoBehaviour
                 else if(tileHeight >= mountainHeight)
                 {
                     
-                    position = new Vector3(x, Mathf.Pow(tileHeight * 2.75f, 3),y);
+                    position = new Vector3(x, Mathf.Pow(tileHeight * mountainMeshHeight, 3),y);
                 }
                 else
                 {
@@ -116,7 +118,12 @@ public class MeshGen : MonoBehaviour
 
         print(triangles[i]);
 
-        mesh.Clear();
+        UpdateMesh();
+        
+    }
+
+    void UpdateMesh()
+    {
         mesh.vertices = newVertices;
         mesh.triangles = triangles;
         mesh.uv = newUV;
@@ -131,18 +138,12 @@ public class MeshGen : MonoBehaviour
         {
             gameObject.GetComponent<MeshRenderer>().material.mainTexture = texture;
         }
-        
-        
+
         mesh.RecalculateNormals();
         meshFilter.mesh = mesh;
-        
-        
-
-        
-
-        
-
     }
+
+
 
     void MakeTexture()
     {
@@ -157,8 +158,10 @@ public class MeshGen : MonoBehaviour
 
 
 
+    int numberOfCycles = 0;
     public void Simulate()
     {
+        numberOfCycles++;
         if (terrain.continueGeneration)
         {
             int i = 0;
@@ -169,16 +172,21 @@ public class MeshGen : MonoBehaviour
                     if (vertexColour == true)
                     {
                         colours[i] = Colours[(int)terrain.Tiles[x, y].type];
+                        
                     }
                     else
                     {
                         newUV[i] = UV(colourXY[(int)terrain.Tiles[x, y].type].x, colourXY[(int)terrain.Tiles[x, y].type].y);
+                        
+                        
                     }
 
                     i++;
                 }
             }
         }
+
+        
     }
 
 
