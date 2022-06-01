@@ -16,6 +16,7 @@ public class MeshGen : MonoBehaviour
     public Color[] Colours;
     public Vector2[] colourXY;
     public float mountainHeight = 0.6f;
+    public GameObject tree;
     public float scale = 0.5f;
     public float waterMeshHeight = 0;
     public bool vertexColour = false;
@@ -26,6 +27,7 @@ public class MeshGen : MonoBehaviour
     public Material vertexColourMat;
     public Texture2D texture;
     Mesh mesh;
+    int numberOfCycles = 0;
     public void MakeMesh()
     {
         texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
@@ -48,6 +50,7 @@ public class MeshGen : MonoBehaviour
         {
             for (int y = 0; y < 100; y++)
             {
+
                 
                 float noise = terrain.Tiles[x, y].height; 
                 
@@ -80,10 +83,13 @@ public class MeshGen : MonoBehaviour
                     
                     newUV[i] = UV(x, y);
                 }
-                
-                
 
-                
+
+                if (terrain.Tiles[x, y].type == Generation.types.forest)
+                {
+                    Instantiate(tree, position + new Vector3(Random.Range(-0.5f,0.5f), 0, Random.Range(-0.5f, 0.5f)), Quaternion.Euler(-90,0,0)).transform.parent = transform;
+                }
+
                 vertices[x, y].index = i;
                 vertices[x, y].position = position;
                 newVertices[i] = position;
@@ -102,12 +108,24 @@ public class MeshGen : MonoBehaviour
             {
                 if (x < 98 && y < 98)
                 {
-                    triangles[j] = vertices[x, y].index;
-                    triangles[j + 1] = vertices[x, y + 1].index;
-                    triangles[j + 2] = vertices[x + 1, y].index;
-                    triangles[j + 3] = vertices[x + 1, y].index;
-                    triangles[j + 4] = vertices[x, y + 1].index;
-                    triangles[j + 5] = vertices[x + 1, y + 1].index;
+                    
+                    
+
+                    
+                    if (terrain.Tiles[x ,y].type != Generation.types.sea || terrain.Tiles[x, y + 1].type != Generation.types.sea || terrain.Tiles[x + 1, y].type != Generation.types.sea)
+                    {
+                        triangles[j] = vertices[x, y].index;
+                        triangles[j + 1] = vertices[x, y + 1].index;
+                        triangles[j + 2] = vertices[x + 1, y].index;
+                    }
+
+                    if (terrain.Tiles[x + 1, y].type != Generation.types.sea || terrain.Tiles[x, y + 1].type != Generation.types.sea || terrain.Tiles[x + 1, y + 1].type != Generation.types.sea)
+                    {
+                        triangles[j + 3] = vertices[x + 1, y].index;
+                        triangles[j + 4] = vertices[x, y + 1].index;
+                        triangles[j + 5] = vertices[x + 1, y + 1].index;
+                    }
+                    
                 }
                 
 
@@ -119,7 +137,8 @@ public class MeshGen : MonoBehaviour
         print(triangles[i]);
 
         UpdateMesh();
-        
+        gameObject.AddComponent<MeshCollider>();
+        transform.localScale = new Vector3(10, 10, 10);
     }
 
     void UpdateMesh()
@@ -158,7 +177,7 @@ public class MeshGen : MonoBehaviour
 
 
 
-    int numberOfCycles = 0;
+    
     public void Simulate()
     {
         numberOfCycles++;
