@@ -161,7 +161,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 546bef52c491eca43bd9dafe8d359fe8, type: 2}
   - {fileID: 2100000, guid: 3710bbf0f0c547c48a54f8f4960e98a1, type: 2}
   - {fileID: 2100000, guid: fa797ce9dc8acc141a2f2a375b6b78fe, type: 2}
-  seed: -100345
+  seed: 0
   scale: 0.025
   mountainLevel: 0.6
   size: 100
