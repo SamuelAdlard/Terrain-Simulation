@@ -127,7 +127,7 @@ public class Generation : MonoBehaviour
                 if (nearMountain && Random.Range(0,10) == 0 && Tiles[x, y].type != types.mountain )
                 {
                     Tiles[x, y].water += 500;
-                    //Tiles[x, y].type = types.freshwater;
+                    
                 }
             }
         }

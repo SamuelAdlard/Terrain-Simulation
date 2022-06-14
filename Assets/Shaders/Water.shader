@@ -5,6 +5,7 @@ Shader "Custom/Water"
         _Color("Colour", Color) = (0, 0, 0, 1)
         _Strength("Amplitude", Range(0,20)) = 0.1
         _Speed("Speed", Range(-200,200)) = 100
+        _MainTex("Albedo (RGB)", 2D) = "white" {}
     }
     SubShader
     {
@@ -21,6 +22,8 @@ Shader "Custom/Water"
             float _Strength;
             float _Speed;
 
+            
+
             struct vextexInput
             {
                 float4 vertex : POSITION;
@@ -29,9 +32,10 @@ Shader "Custom/Water"
             struct vertexOutPut
             {
                 float4 pos : SV_POSITION;
+                
             };
             
-
+            
             vertexOutPut vertexFunc(vextexInput IN)
             {
                 vertexOutPut o;
@@ -39,7 +43,11 @@ Shader "Custom/Water"
                 float4 worldPos = mul(unity_ObjectToWorld, IN.vertex);
 
                 float displacement = (cos(worldPos.y) + cos(worldPos.x + (_Speed * _Time)));
+                
+                
                 worldPos.y = worldPos.y + (displacement * _Strength);
+                
+                
                 o.pos = mul(UNITY_MATRIX_VP, worldPos);
                 return o;
             }
