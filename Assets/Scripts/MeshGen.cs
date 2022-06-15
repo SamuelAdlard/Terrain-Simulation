@@ -17,6 +17,8 @@ public class MeshGen : MonoBehaviour
     public Vector2[] colourXY;
     public float mountainHeight = 0.6f;
     public GameObject tree;
+
+    public GameObject Cactus;
     public float scale = 0.5f;
     public float waterMeshHeight = 0;
     public bool vertexColour = false;
@@ -88,6 +90,11 @@ public class MeshGen : MonoBehaviour
                 if (terrain.Tiles[x, y].type == Generation.types.forest)
                 {
                     Instantiate(tree, position + new Vector3(Random.Range(-0.5f,0.5f), 0, Random.Range(-0.5f, 0.5f)), Quaternion.Euler(-90,0,0)).transform.parent = transform;
+                }
+
+                if (terrain.Tiles[x, y].type == Generation.types.desert && Random.Range(0,5) == 1)
+                {
+                    Instantiate(Cactus, position + new Vector3(Random.Range(-0.5f,0.5f), -0.01f, Random.Range(-0.5f, 0.5f)), Quaternion.Euler(-90,Random.Range(0f ,360f),0)).transform.parent = transform;
                 }
 
                 vertices[x, y].index = i;

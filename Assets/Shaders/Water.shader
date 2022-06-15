@@ -5,7 +5,7 @@ Shader "Custom/Water"
         _Color("Colour", Color) = (0, 0, 0, 1)
         _Strength("Amplitude", Range(0,20)) = 0.1
         _Speed("Speed", Range(-200,200)) = 100
-        _MainTex("Albedo (RGB)", 2D) = "white" {}
+        _MainTex("Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -17,12 +17,21 @@ Shader "Custom/Water"
             CGPROGRAM
             #pragma vertex vertexFunc
             #pragma fragment fragFunc
-        
+            #include "UnityCG.cginc"
+
             float4 _Color;
             float _Strength;
             float _Speed;
-
+            sampler2D _MainTex;
             
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 normal :  NORMAL;
+                float2 uv : TEXCOORD0;
+            };
+
 
             struct vextexInput
             {
@@ -52,9 +61,11 @@ Shader "Custom/Water"
                 return o;
             }
 
-            float4 fragFunc(vertexOutPut IN) : COLOR
+            fixed4 fragFunc(v2f IN) : SV_Target
             {
-                return _Color;
+                fixed4 pixelColour = tex2D(_MainTex, IN.uv);
+
+                return pixelColour;
             }
                 
             
