@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Generation : MonoBehaviour
 {
@@ -22,6 +24,15 @@ public class Generation : MonoBehaviour
     public MeshGen meshGen;
     public bool continueGeneration = false;
     public bool showSim = true;
+
+    public GameObject button;
+    public GameObject Player;
+    public GameObject menuCamera;
+    public TMP_InputField seedInput;
+    public TMP_InputField cyclesInput;
+
+
+    bool simulating = false;
     int cycles = 0;
     public enum types
     {
@@ -33,9 +44,21 @@ public class Generation : MonoBehaviour
         mountain
     }
 
-    void Start()
+    public void BeingSimulation()
     {
-       
+        try
+        {
+            seed = int.Parse(seedInput.text);
+            numberOfCycles = int.Parse(cyclesInput.text);
+            seedInput.gameObject.SetActive(false);
+            cyclesInput.gameObject.SetActive(false);
+            button.SetActive(false);
+        }
+        catch
+        {
+            return;
+        }
+        
         
         for (int x = 0; x < size; x++)
         {
@@ -136,29 +159,37 @@ public class Generation : MonoBehaviour
         {
             meshGen.MakeMesh();
         }
-
+        simulating = true;
     }
 
     private void Update()
     {
-        bool simulated = false;
-        if (nextTick < Time.time && cycles < numberOfCycles || continueGeneration)
+        if(simulating)
         {
-           
-            nextTick = Time.time + delay;
-            Simulate();
-            cycles++;
-            if (continueGeneration)
+            bool simulated = false;
+            if (nextTick < Time.time && cycles < numberOfCycles || continueGeneration)
             {
-                meshGen.Simulate();
+           
+                nextTick = Time.time + delay;
+                Simulate();
+                cycles++;
+                if (continueGeneration)
+                {
+                    meshGen.Simulate();
+                }
+            }
+            print(cycles);
+            if (cycles == numberOfCycles - 1 && !continueGeneration && !simulated)
+            {
+                meshGen.MakeMesh();
+                menuCamera.SetActive(false);
+                Player.SetActive(true);
+                simulated = true;
             }
         }
-        print(cycles);
-        if (cycles == numberOfCycles - 1 && !continueGeneration && !simulated)
-        {
-            meshGen.MakeMesh();
-            simulated = true;
-        }
+        
+        
+        
        
         
     }

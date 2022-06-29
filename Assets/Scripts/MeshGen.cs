@@ -89,7 +89,7 @@ public class MeshGen : MonoBehaviour
 
                 if (terrain.Tiles[x, y].type == Generation.types.forest)
                 {
-                    Instantiate(tree, position + new Vector3(Random.Range(-0.5f,0.5f), 0, Random.Range(-0.5f, 0.5f)), Quaternion.Euler(-90,0,0)).transform.parent = transform;
+                    Instantiate(tree, position + new Vector3(Random.Range(-0.5f,0.5f), -0.1f, Random.Range(-0.5f, 0.5f)), Quaternion.Euler(-90,Random.Range(0f ,360f),0)).transform.parent = transform;
                 }
 
                 if (terrain.Tiles[x, y].type == Generation.types.desert && Random.Range(0,5) == 1)
